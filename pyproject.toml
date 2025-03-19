@@ -1,0 +1,12 @@
+[project]
+name = "loggage"
+version = "0.1.0"
+description = "Store you operation log to different backend."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "elasticsearch>=8.17.2",
+    "pydantic>=2.10.6",
+    "pymysql>=1.1.1",
+    "pyyaml>=6.0.2",
+]
