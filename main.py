@@ -1,35 +1,19 @@
+import asyncio
 import uuid
-import yaml
+from datetime import datetime
 
-from src.factory import LogStorageFactory
-from src.logger import OperationLogger
-from src.models import LogDetailItem, OperationLog as LogEntry
-
-
-def load_config(file_path):
-    with open(file_path, "r") as f:
-        config = yaml.safe_load(f)
-    return config
+from core.logger import OperationLogger
+from core.models import OperationLog, LogDetailItem
+from utils.config import load_config
 
 
-if __name__ == "__main__":
-    config_file = "config.yaml"
-    config = load_config(config_file)
-    handlers = []
+async def main():
+    config = load_config("config/config.yaml")
+    operation_logger = OperationLogger(config)
+    await operation_logger.initialize()
 
-    for storage_config in config["storages"]:
-        with LogStorageFactory.create_handler(storage_config) as handler:
-            handlers.append(handler)
-
-    logger = OperationLogger(handlers)
-
-    log_detail = LogDetailItem(
-        id=uuid.uuid4().hex,
-        name="vdi",
-        type="admin"
-    )
-
-    log_entry = LogEntry(
+    log_detail = LogDetailItem(id=uuid.uuid4().hex, name="vdi", type="admin")
+    log_data = OperationLog(
         request_id=uuid.uuid4().hex,
         user_id=uuid.uuid4().hex,
         user_name="vdi",
@@ -49,8 +33,14 @@ if __name__ == "__main__":
         error_message="",
         extra="{}",
         response_body="{}",
-        created_at="2025-03-19 16:58:00",
-        updated_at="2025-03-19 16:58:00"
+        created_at=datetime.now(),
+        updated_at=datetime.now(),
     )
 
-    logger.log(log_entry)
+    try:
+        await operation_logger.log(log_data)
+    finally:
+        await operation_logger.close()
+
+if __name__ == "__main__":
+    asyncio.run(main())

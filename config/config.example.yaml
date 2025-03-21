@@ -1,0 +1,24 @@
+default_storage: mysql
+storages:
+  mysql:
+    enabled: true
+    host: localhost
+    port: 3306
+    user: user
+    password: password
+    db: db_name
+    table: operation_log
+    pool_size: 20
+    max_overflow: 5
+
+  elasticsearch:
+    enabled: true
+    hosts: ["http://localhost:9200"]
+    index: operation-log
+    timeout: 30
+
+  redis:
+    enabled: false
+    host: localhost
+    port: 6379
+    stream_key: operation_log
