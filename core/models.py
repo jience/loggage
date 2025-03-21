@@ -1,7 +1,13 @@
 from datetime import datetime
+from enum import Enum
 from typing import List, Optional
 
 from pydantic import BaseModel
+
+
+class OperationLogStatus(Enum):
+    SUCCESS = "success"
+    FAIL = "fail"
 
 
 class LogDetailItem(BaseModel):

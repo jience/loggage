@@ -15,7 +15,7 @@ class MySQLStorageHandler(BaseStorageHandler):
         self.pool = await aiomysql.create_pool(
             host=self.config["host"],
             port=self.config["port"],
-            user=self.config["port"],
+            user=self.config["user"],
             password=self.config["password"],
             db=self.config["db"],
             minsize=1,
@@ -25,12 +25,12 @@ class MySQLStorageHandler(BaseStorageHandler):
     async def log(self, log_data: OperationLog) -> None:
         async with self.pool.acquire() as conn:
             async with conn.cursor() as cur:
-                query = f"""INSERT INTO {self.config["table"]} 
+                query = """INSERT INTO {} 
                 (created_at, updated_at, user_id, user_name, obj_id, obj_name, 
                 ref_id, ref_name, resource_type, operation_type, action, status, detail, request_id, 
                 request_ip, interval_time, request_params, extra, error_code, error_message, response_body) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                """
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""".format(self.config["table"])
+
                 await cur.execute(query, (
                     log_data.created_at,
                     log_data.updated_at,

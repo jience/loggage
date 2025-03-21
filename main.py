@@ -1,10 +1,10 @@
 import asyncio
-import uuid
 from datetime import datetime
 
 from core.logger import OperationLogger
 from core.models import OperationLog, LogDetailItem
 from utils.config import load_config
+from utils.tools import generate_uuid_str
 
 
 async def main():
@@ -12,14 +12,14 @@ async def main():
     operation_logger = OperationLogger(config)
     await operation_logger.initialize()
 
-    log_detail = LogDetailItem(id=uuid.uuid4().hex, name="vdi", type="admin")
+    log_detail = LogDetailItem(id=generate_uuid_str(), name="vdi", type="admin")
     log_data = OperationLog(
-        request_id=uuid.uuid4().hex,
-        user_id=uuid.uuid4().hex,
+        request_id=generate_uuid_str(),
+        user_id=generate_uuid_str(),
         user_name="vdi",
-        obj_id=uuid.uuid4().hex,
-        obj_name="Arclient-W",
-        ref_id=uuid.uuid4().hex,
+        obj_id=generate_uuid_str(),
+        obj_name="Client-W",
+        ref_id=generate_uuid_str(),
         ref_name="abc",
         resource_type="user",
         operation_type="business",
