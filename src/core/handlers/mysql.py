@@ -25,11 +25,7 @@ class MySQLStorageHandler(BaseStorageHandler):
     async def log(self, log_data: OperationLog) -> None:
         async with self.pool.acquire() as conn:
             async with conn.cursor() as cur:
-                query = """INSERT INTO {} 
-                (created_at, updated_at, user_id, user_name, obj_id, obj_name, 
-                ref_id, ref_name, resource_type, operation_type, action, status, detail, request_id, 
-                request_ip, interval_time, request_params, extra, error_code, error_message, response_body) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""".format(self.config["table"])
+                query = """INSERT INTO {} (created_at, updated_at, user_id, user_name, obj_id, obj_name, ref_id, ref_name, resource_type, operation_type, action, status, detail, request_id, request_ip, interval_time, request_params, extra, error_code, error_message, response_body) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""".format(self.config["table"])
 
                 await cur.execute(query, (
                     log_data.created_at,
@@ -54,6 +50,7 @@ class MySQLStorageHandler(BaseStorageHandler):
                     log_data.error_message,
                     log_data.response_body
                 ))
+                print(cur.description)
                 await conn.commit()
 
     async def close(self) -> None:

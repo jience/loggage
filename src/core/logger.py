@@ -6,6 +6,19 @@ from src.core.models import OperationLog as OperationLogEntry
 
 
 class OperationLogger:
+    _instance = None  # 单例实例
+
+    @classmethod
+    def init_instance(cls, config: Dict):
+        cls._instance = OperationLogger(config)
+        return cls._instance
+
+    @classmethod
+    def get_instance(cls):
+        if cls._instance is None:
+            raise RuntimeError("Operation Logger not initialized")
+        return cls._instance
+
     def __init__(self, config: Dict):
         self.default_storage = config["default_storage"]
         self.handlers = {}
