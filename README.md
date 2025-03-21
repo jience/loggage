@@ -2,7 +2,7 @@
 
 <div align="center">
   <img src="./loggage.png" align="center" width="441" alt="Project icon">
-  <h1 align="center">Loggage: Code Less, Make More</h1>
+  <h3 align="center">Loggage: easy and happy</h3>
 </div>
 
 <div align="center">
