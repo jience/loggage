@@ -1,4 +1,4 @@
-from core.models import OperationLog
+from src.core.models import OperationLog
 
 
 def test_valid_operation_log_entry():

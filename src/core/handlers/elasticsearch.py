@@ -2,8 +2,8 @@ from typing import Dict, Any
 
 from elasticsearch import AsyncElasticsearch
 
-from core.handlers.base import BaseStorageHandler
-from core.models import OperationLog
+from src.core.handlers.base import BaseStorageHandler
+from src.core.models import OperationLog
 
 
 class ElasticsearchStorageHandler(BaseStorageHandler):

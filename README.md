@@ -99,9 +99,9 @@ import asyncio
 import uuid
 from datetime import datetime
 
-from core.logger import OperationLogger
-from core.models import OperationLog, LogDetailItem
-from utils.config import load_config
+from src.core.logger import OperationLogger
+from src.core.models import OperationLog, LogDetailItem
+from src.utils.config import load_config
 
 
 async def main():
@@ -138,6 +138,7 @@ async def main():
         await operation_logger.log(log_data)
     finally:
         await operation_logger.close()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from core.models import OperationLog
+from src.core.models import OperationLog
 
 
 class BaseStorageHandler(ABC):
