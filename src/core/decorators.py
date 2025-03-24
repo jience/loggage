@@ -20,12 +20,12 @@ def operation_logger(
     """
     操作日志记录装饰器
     :param get_request: 请求上下文.
-    :param resource_type: 资源类型. apps.common.constant.OplogTypeConstant
-    :param action: 动作定义.如创建云桌面：create.apps.common.constant.OperationAction
-    :param obj_id: 操作对象的id,如创建云桌面,obj_id为云桌面的UUID
-    :param obj_name: 操作对象的name,如创建云桌面,obj_name为云桌面的name
-    :param ref_id: 相关对象的id,如为云桌面a绑定用户user1,ref_id为user1的id
-    :param ref_name: 相关对象的name,如为云桌面a绑定用户user1,ref_name为user1的name
+    :param resource_type: 资源类型. apps.common.constant.ResourceType
+    :param action: 动作定义.如创建用户：create.apps.common.constant.OperationAction
+    :param obj_id: 操作对象的id,如创建用户,obj_id为用户的UUID
+    :param obj_name: 操作对象的name,如创建用户,obj_name为用户的name
+    :param ref_id: 相关对象的id,如为用户设置角色,ref_id为角色的id
+    :param ref_name: 相关对象的name,如为户设置角色,ref_name为角色的name
     :param operation_type: 操作日志类型. business/resource/terminal
     :return:
     """
