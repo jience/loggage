@@ -103,7 +103,7 @@ async def _log_request(get_request, resource_type, action, obj_id, obj_name, ref
         await logger.log(log_entry)
 
     except Exception as e:
-        print(f"log request error: {str(e)}")
+        print(f"Operation log request error: {str(e)}")
         pass
 
 

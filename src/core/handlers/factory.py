@@ -23,3 +23,4 @@ class LogStorageFactory(object):
 # 注册操作日志存储处理器
 LogStorageFactory.register_handler("mysql", MySQLStorageHandler)
 LogStorageFactory.register_handler("elasticsearch", ElasticsearchStorageHandler)
+# Add your other log handler in here.

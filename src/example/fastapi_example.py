@@ -19,7 +19,8 @@ def get_request():
 
 
 @app.get("/api/users")
-@operation_logger(get_request, resource_type="User", action="create", obj_id="123", obj_name="user123",
+@operation_logger(get_request, resource_type="User", action="create",
+                  obj_id="123", obj_name="user123",
                   ref_id="456", ref_name="456")
 async def create_user(request: Request):
     return JSONResponse({"hello": "FastAPI"}, status_code=200)
