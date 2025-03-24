@@ -178,4 +178,4 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
-!/config/config.yaml
+/config/config.yaml
