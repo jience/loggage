@@ -25,7 +25,7 @@ class AsyncLogQueue(object):
             print(f"Warn: queue full!!!")
             return False
 
-    def start_consumers(self, logger="OperationLogger"):
+    def start_consumers(self, logger="AsyncOperationLogger"):
         def _worker():
             while not self._stop_event.isSet():
                 try:
@@ -40,7 +40,7 @@ class AsyncLogQueue(object):
         for _ in range(4):
             self.worker_pool.submit(_worker)
 
-    def _process_entry(self, entry: LogEntry, logger="OperationLogger") -> bool:
+    def _process_entry(self, entry: LogEntry, logger="AsyncOperationLogger") -> bool:
         try:
             return logger._sync_log(entry)
         except Exception as e:

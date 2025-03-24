@@ -5,12 +5,12 @@ from src.core.handlers.factory import LogStorageFactory
 from src.core.models import OperationLog as OperationLogEntry
 
 
-class OperationLogger:
+class AsyncOperationLogger:
     _instance = None  # 单例实例
 
     @classmethod
     def init_instance(cls, config: Dict):
-        cls._instance = OperationLogger(config)
+        cls._instance = AsyncOperationLogger(config)
         return cls._instance
 
     @classmethod

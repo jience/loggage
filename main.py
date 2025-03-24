@@ -1,7 +1,7 @@
 import asyncio
 from datetime import datetime
 
-from src.core.logger import OperationLogger
+from src.core.logger import AsyncOperationLogger
 from src.core.models import OperationLog, LogDetailItem
 from src.utils.config import load_config
 from src.utils.tools import generate_uuid_str
@@ -9,7 +9,7 @@ from src.utils.tools import generate_uuid_str
 
 async def main():
     config = load_config("config/config.yaml")
-    operation_logger = OperationLogger(config)
+    operation_logger = AsyncOperationLogger(config)
     await operation_logger.initialize()
 
     log_detail = LogDetailItem(id=generate_uuid_str(), name="vdi", type="admin")

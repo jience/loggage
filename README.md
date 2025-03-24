@@ -110,14 +110,14 @@ import asyncio
 import uuid
 from datetime import datetime
 
-from src.core.logger import OperationLogger
+from src.core.logger import AsyncOperationLogger
 from src.core.models import OperationLog, LogDetailItem
 from src.utils.config import load_config
 
 
 async def main():
     config = load_config("config/config.yaml")
-    operation_logger = OperationLogger(config)
+    operation_logger = AsyncOperationLogger(config)
     await operation_logger.initialize()
 
     log_detail = LogDetailItem(id=uuid.uuid4().hex, name="vdi", type="admin")

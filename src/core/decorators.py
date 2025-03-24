@@ -4,7 +4,7 @@ import uuid
 from typing import Callable
 
 from src.core.models import OperationLog, OperationLogStatus
-from src.core.logger import OperationLogger
+from src.core.logger import AsyncOperationLogger
 
 
 def operation_logger(
@@ -97,7 +97,7 @@ async def _log_request(get_request, resource_type, action, obj_id, obj_name, ref
         log_entry = OperationLog(**log_data)
 
         # 获取操作日志器实例
-        logger = OperationLogger.get_instance()
+        logger = AsyncOperationLogger.get_instance()
 
         # 异步记录日志
         await logger.log(log_entry)

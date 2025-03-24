@@ -4,11 +4,11 @@ from fastapi import  FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from src.core.decorators import operation_logger
-from src.core.logger import OperationLogger
+from src.core.logger import AsyncOperationLogger
 from src.utils.config import load_config
 
 config = load_config("/home/zalex/PycharmProjects/loggage/config/config.yaml")
-op_logger = OperationLogger(config)
+op_logger = AsyncOperationLogger(config)
 asyncio.run(op_logger.initialize())
 
 app = FastAPI()

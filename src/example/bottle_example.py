@@ -2,12 +2,12 @@ import asyncio
 from bottle import Bottle, request
 
 from src.core.decorators import operation_logger
-from src.core.logger import OperationLogger
+from src.core.logger import AsyncOperationLogger
 from src.utils.config import load_config
 
 
 config = load_config("/home/zalex/PycharmProjects/loggage/config/config.yaml")
-op_logger = OperationLogger(config)
+op_logger = AsyncOperationLogger(config)
 asyncio.run(op_logger.initialize())
 
 app = Bottle()
@@ -22,7 +22,8 @@ def index():
 
 
 @app.get("/api/users")
-@operation_logger(get_request, resource_type="User", action="create", obj_id="123", obj_name="user123",
+@operation_logger(get_request, resource_type="User", action="create",
+                  obj_id="123", obj_name="user123",
                   ref_id="456", ref_name="456")
 def create_user():
     return "Hello, Bottle"
