@@ -17,7 +17,8 @@
 # Introduction
 
 `Loggage` is a universal component designed to record operation logs. It enables you to log operational records of your business systems by leveraging decorators or simply invoking regular functions, while maintaining minimal impact on your business code. Additionally, it provides flexibility in storing operation logs, allowing you to choose different storage solutions based on your project needs. Loggage supports a variety of storage options, including relational databases like MySQL, search engines like Elasticsearch, and in-memory data stores like Redis.
-## 主要特性
+
+## Features
 
 - **Fully asynchronous**: Supports the async/await asynchronous system architecture safely
 - **Exception safety**: Logging operations will not disrupt the API's normal execution
