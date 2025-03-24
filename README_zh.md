@@ -10,38 +10,39 @@
   <img src="https://img.shields.io/badge/Ruff-6340ac?logo=Ruff&logoColor=fff">
   <img src="https://img.shields.io/badge/Python-3.10-34D058">
   <p align="center">
-    English | <a href="README_zh.md">中文</a>
+    中文 | <a href="README.md">English</a>
   </p>
 </div>
 
-# Introduction
+# 介绍
 
-`Loggage` is a universal component designed to record operation logs. It enables you to log operational records of your business systems by leveraging decorators or simply invoking regular functions, while maintaining minimal impact on your business code. Additionally, it provides flexibility in storing operation logs, allowing you to choose different storage solutions based on your project needs. Loggage supports a variety of storage options, including relational databases like MySQL, search engines like Elasticsearch, and in-memory data stores like Redis.
+`Loggage`是一款记录操作日志的通用组件，它旨在帮助您通过装饰器或者调用普通函数的方式记录业务系统的操作日志，对业务代码无侵入。同时允许您根据自己的项目需求，将操作日志存储到不同的存储位置，支持MySQL、Elasticsearch以及Redis等。
+
 ## 主要特性
 
-- **Fully asynchronous**: Supports the async/await asynchronous system architecture safely
-- **Exception safety**: Logging operations will not disrupt the API's normal execution
-- **Type safety**: Data validation based on Pydantic models
-- **High performance**: Logging operations are fully asynchronous
-- **Easy to extend**: Factory pattern + standard interface facilitates adding new storage processors (recommended phrasing: plug-in architecture)
-- **Configuration-driven**: Uses YAML-based configuration files for flexible control of storage mechanisms
+- **完全异步**： 安全支持async/await异步体系
+- **异常安全**： 日志记录失败不会影响API正常流程
+- **类型安全**： 基于pydantic模型进行数据验证
+- **高性能**： 日志记录完全异步执行
+- **扩展便捷**： 工厂模式+标准接口方便新增存储处理器
+- **配置驱动**： 通过YAML配置灵活控制存储方式
 
-## Installation
+## 安装
 
-1. Install uv (A fast Python package installer and resolver):
+1. 安装 uv（一个快速的 Python 包管理器）:
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-2. Clone the repository:
+2. 克隆仓库:
 
 ```bash
 git clone https://github.com/jience/loggage.git
 cd loggage
 ```
 
-3. Create a new virtual environment and activate it:
+3. 创建并激活虚拟环境:
 
 ```bash
 uv venv
@@ -50,13 +51,13 @@ source .venv/bin/activate  # On Unix/macOS
 # .venv\Scripts\activate
 ```
 
-4. Install dependencies:
+4. 安装依赖:
 
 ```bash
 uv pip install -r requirements.txt
 ```
 
-## Configuration
+## 配置说明
 
 Follow these steps to set up your configuration:
 
@@ -66,7 +67,7 @@ Follow these steps to set up your configuration:
 cp config/config.example.yaml config/config.yaml
 ```
 
-2. Edit `config/config.yaml` to customize settings:
+2. 编辑 `config/config.yaml` 添加自定义配置:
 
 ```yaml
 default_storage: mysql
@@ -95,15 +96,15 @@ storages:
     stream_key: operation_log
 ```
 
-## Quick Start
+## 快速启动
 
-One line for run:
+使用如下方式启动:
 
 ```bash
 python main.py
 ```
 
-## Usage
+## 使用方法
 
 ```python
 import asyncio
