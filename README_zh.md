@@ -108,48 +108,45 @@ python main.py
 
 ```python
 import asyncio
-import uuid
 from datetime import datetime
 
 from src.core.logger import AsyncOperationLogger
 from src.core.models import OperationLog, LogDetailItem
 from src.utils.config import load_config
+from src.utils.tools import generate_uuid_str
 
 
 async def main():
     config = load_config("config/config.yaml")
-    operation_logger = AsyncOperationLogger(config)
-    await operation_logger.initialize()
 
-    log_detail = LogDetailItem(id=uuid.uuid4().hex, name="vdi", type="admin")
-    log_data = OperationLog(
-        request_id=uuid.uuid4().hex,
-        user_id=uuid.uuid4().hex,
-        user_name="vdi",
-        obj_id=uuid.uuid4().hex,
-        obj_name="Arclient-W",
-        ref_id=uuid.uuid4().hex,
-        ref_name="abc",
-        resource_type="user",
-        operation_type="business",
-        action="login",
-        status="success",
-        detail=[log_detail],
-        request_ip="127.0.0.1",
-        request_params="{}",
-        interval_time=0,
-        error_code="",
-        error_message="",
-        extra="{}",
-        response_body="{}",
-        created_at=datetime.now(),
-        updated_at=datetime.now(),
-    )
-
-    try:
-        await operation_logger.log(log_data)
-    finally:
-        await operation_logger.close()
+    async with AsyncOperationLogger(config) as op_logger:
+        log_detail = LogDetailItem(id=generate_uuid_str(), name="vdi", type="admin")
+        log_data = OperationLog(
+            request_id=generate_uuid_str(),
+            user_id=generate_uuid_str(),
+            user_name="vdi",
+            obj_id=generate_uuid_str(),
+            obj_name="Client-W",
+            ref_id=generate_uuid_str(),
+            ref_name="abc",
+            resource_type="user",
+            operation_type="business",
+            action="login",
+            status="success",
+            detail=[log_detail],
+            request_ip="127.0.0.1",
+            request_params="{}",
+            interval_time=0,
+            error_code="",
+            error_message="",
+            extra="{}",
+            response_body="{}",
+            created_at=datetime.now(),
+            updated_at=datetime.now(),
+        )
+        await op_logger.log(log_data)
+        # 或批量处理
+        # await op_logger.log_batch([log_data, log_data, log_data])
 
 
 if __name__ == "__main__":

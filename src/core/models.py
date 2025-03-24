@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class OperationLogStatus(Enum):
@@ -36,5 +36,6 @@ class OperationLog(BaseModel):
     error_message: Optional[str] = None         # 操作失败详情信息
     extra: Optional[str] = None                 # 其他信息
     response_body: Optional[str] = None         # 响应体
-    created_at: datetime                        # 创建时间
-    updated_at: datetime                        # 更新时间
+    created_at: datetime = Field(default_factory=datetime.now)    # 创建时间
+    updated_at: datetime = Field(default_factory=datetime.now)    # 更新时间
+    retry_count: int = 0                        # 重试计数器

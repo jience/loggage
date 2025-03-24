@@ -1,5 +1,5 @@
 import aiomysql
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 from src.core.handlers.base import BaseStorageHandler
 from src.core.models import OperationLog
@@ -53,7 +53,46 @@ class MySQLStorageHandler(BaseStorageHandler):
                 print(cur.description)
                 await conn.commit()
 
+    async def log_batch(self, batch: List[OperationLog]) -> None:
+        async with self.pool.acquire() as conn:
+            async with conn.cursor() as cur:
+                args = self.format_batch_insert_logs(batch)
+                query = "INSERT INTO {} (created_at, updated_at, user_id, user_name, obj_id, obj_name, ref_id, ref_name, resource_type, operation_type, action, status, detail, request_id, request_ip, interval_time, request_params, extra, error_code, error_message, response_body) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(self.config["table"])
+
+                await cur.executemany(query, args)
+                print(cur.description)
+                await conn.commit()
+
     async def close(self) -> None:
         if self.pool:
             self.pool.close()
             await self.pool.wait_closed()
+
+    def format_batch_insert_logs(self, batch: List[OperationLog]) -> List[tuple]:
+        res = []
+        for log_data in batch:
+            item = (
+                log_data.created_at,
+                log_data.updated_at,
+                log_data.user_id,
+                log_data.user_name,
+                log_data.obj_id,
+                log_data.obj_name,
+                log_data.ref_id,
+                log_data.ref_name,
+                log_data.resource_type,
+                log_data.operation_type,
+                log_data.action,
+                log_data.status,
+                log_data.detail,
+                log_data.request_id,
+                log_data.request_ip,
+                log_data.interval_time,
+                log_data.request_params,
+                log_data.extra,
+                log_data.error_code,
+                log_data.error_message,
+                log_data.response_body
+            )
+            res.append(item)
+        return res

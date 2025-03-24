@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 from elasticsearch import AsyncElasticsearch
 
@@ -20,6 +20,17 @@ class ElasticsearchStorageHandler(BaseStorageHandler):
         await self.client.index(
             index=self.index,
             document=doc
+        )
+
+    async def log_batch(self, batch: List[OperationLog]) -> None:
+        operation_logs = []
+        for log_data in batch:
+            operation_logs.append({"index": {"_index": self.index}})
+            operation_logs.append(log_data.model_dump())
+
+        await self.client.bulk(
+            body=operation_logs,
+            refresh=False
         )
 
     async def close(self) -> None:
