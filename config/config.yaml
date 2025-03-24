@@ -13,7 +13,7 @@ storages:
 
   elasticsearch:
     enabled: true
-    hosts: ["http://178.104.163.108:9200"]
+    hosts: ["http://178.104.163.189:9200"]
     index: operation-log
     timeout: 30
 
