@@ -1,6 +1,7 @@
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Iterator
 
 from elasticsearch import AsyncElasticsearch
+from elasticsearch.helpers import async_bulk
 
 from src.core.handlers.base import BaseStorageHandler
 from src.core.models import OperationLog
@@ -23,15 +24,14 @@ class ElasticsearchStorageHandler(BaseStorageHandler):
         )
 
     async def log_batch(self, batch: List[OperationLog]) -> None:
-        operation_logs = []
-        for log_data in batch:
-            operation_logs.append({"index": {"_index": self.index}})
-            operation_logs.append(log_data.model_dump())
+        await async_bulk(self.client, self._generate_data(batch))
 
-        await self.client.bulk(
-            body=operation_logs,
-            refresh=False
-        )
+    def _generate_data(self, batch: List[OperationLog]) -> Iterator:
+        for log_data in batch:
+            yield {
+                "_index": self.index,
+                "docs": log_data.model_dump(mode="json")
+            }
 
     async def close(self) -> None:
         await self.client.close()

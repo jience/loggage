@@ -1,6 +1,8 @@
 import json
 import uuid
 
+from src.core.models import LogDetailItem
+
 
 def _get_user_id(request) -> str:
     user_uuid = "root"
@@ -40,3 +42,10 @@ def _get_request_id(request):
         # 非http请求的日志
         request_id = str(uuid.uuid4()).upper()
     return request_id
+
+def _get_request_detail(request):
+    if hasattr(request, "detail"):
+        detail = [LogDetailItem(**item) for item in request.detail.get('resources', [])]
+    else:
+        detail = []
+    return detail

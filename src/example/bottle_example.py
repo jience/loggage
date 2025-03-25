@@ -17,9 +17,9 @@ def index():
 
 
 @app.get("/api/users")
-@hybrid_logger(resource_type="User", action="create",
-                  obj_id="123", obj_name="user123",
-                  ref_id="456", ref_name="456")
+@hybrid_logger(resource_type="user", action="create",
+               obj_id="123", obj_name="user123",
+               ref_id="456", ref_name="456")
 def create_user():
     return "Hello, Bottle"
 

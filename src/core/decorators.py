@@ -64,6 +64,7 @@ def _build_log_data(**kwargs) -> OperationLog:
     from src.core.adapters.bottle_adapter import _get_user_id
     from src.core.adapters.bottle_adapter import _get_user_name
     from src.core.adapters.bottle_adapter import _get_request_ip
+    from src.core.adapters.bottle_adapter import _get_request_detail
 
     request = bottle.request
     response = bottle.response
@@ -81,7 +82,7 @@ def _build_log_data(**kwargs) -> OperationLog:
         "operation_type": kwargs.get("operation_type"),
         "action": kwargs.get("action"),
         "status": kwargs.get("status"),
-        "detail": [],
+        "detail": _get_request_detail(request),
         "request_ip": _get_request_ip(request),
         "request_params": "",
         "interval_time": 0,
