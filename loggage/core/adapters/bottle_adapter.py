@@ -49,3 +49,15 @@ def _get_request_detail(request):
     else:
         detail = []
     return detail
+
+def _handle_magic_param(request_obj, param):
+    """
+    根据模式匹配request相应的属性.
+    :param request_obj: 上下文中的request对象
+    :param param: 模式字符串.应该形如： obj_id\obj_name
+    :return:
+    """
+    if not param:
+        return ""
+    if hasattr(request_obj, param):
+        return getattr(request_obj, param)
