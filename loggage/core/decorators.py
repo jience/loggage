@@ -1,7 +1,7 @@
 import functools
 
-from src.core.hybrid_logger import HybridOperationLogger
-from src.core.models import OperationLog, OperationLogStatus
+from loggage.core.hybrid_logger import HybridOperationLogger
+from loggage.core.models import OperationLog, OperationLogStatus
 
 
 def operation_logger(
@@ -60,11 +60,11 @@ def operation_logger(
 
 def _build_log_data(**kwargs) -> OperationLog:
     import bottle
-    from src.core.adapters.bottle_adapter import _get_request_id
-    from src.core.adapters.bottle_adapter import _get_user_id
-    from src.core.adapters.bottle_adapter import _get_user_name
-    from src.core.adapters.bottle_adapter import _get_request_ip
-    from src.core.adapters.bottle_adapter import _get_request_detail
+    from loggage.core.adapters.bottle_adapter import _get_request_id
+    from loggage.core.adapters.bottle_adapter import _get_user_id
+    from loggage.core.adapters.bottle_adapter import _get_user_name
+    from loggage.core.adapters.bottle_adapter import _get_request_ip
+    from loggage.core.adapters.bottle_adapter import _get_request_detail
 
     request = bottle.request
     response = bottle.response

@@ -4,8 +4,8 @@ import threading
 import time
 from typing import Dict, List
 
-from src.core.logger import AsyncOperationLogger
-from src.core.models import OperationLog
+from loggage.core.logger import AsyncOperationLogger
+from loggage.core.models import OperationLog
 
 
 class HybridOperationLogger:

@@ -2,7 +2,7 @@ import queue
 import threading
 from concurrent.futures import ThreadPoolExecutor
 
-from src.core.models import OperationLog as LogEntry
+from loggage.core.models import OperationLog as LogEntry
 
 
 class AsyncLogQueue(object):

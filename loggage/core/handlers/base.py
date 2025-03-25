@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from src.core.models import OperationLog
+from loggage.core.models import OperationLog
 
 
 class BaseStorageHandler(ABC):

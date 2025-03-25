@@ -3,8 +3,8 @@ import json
 import aiomysql
 from typing import Dict, Any, List
 
-from src.core.handlers.base import BaseStorageHandler
-from src.core.models import OperationLog
+from loggage.core.handlers.base import BaseStorageHandler
+from loggage.core.models import OperationLog
 
 
 class MySQLStorageHandler(BaseStorageHandler):

@@ -1,8 +1,8 @@
 from typing import Dict, Optional, Type
 
-from src.core.handlers.base import BaseStorageHandler
-from src.core.handlers.mysql import MySQLStorageHandler
-from src.core.handlers.elasticsearch import ElasticsearchStorageHandler
+from loggage.core.handlers.base import BaseStorageHandler
+from loggage.core.handlers.mysql import MySQLStorageHandler
+from loggage.core.handlers.elasticsearch import ElasticsearchStorageHandler
 
 
 class LogStorageFactory(object):

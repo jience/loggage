@@ -1,8 +1,8 @@
 import asyncio
 from typing import Dict, List, Optional
 
-from src.core.handlers.factory import LogStorageFactory
-from src.core.models import OperationLog as OperationLogEntry
+from loggage.core.handlers.factory import LogStorageFactory
+from loggage.core.models import OperationLog as OperationLogEntry
 
 
 class AsyncOperationLogger:

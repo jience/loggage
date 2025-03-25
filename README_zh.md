@@ -110,10 +110,10 @@ python main.py
 import asyncio
 from datetime import datetime
 
-from src.core.logger import AsyncOperationLogger
-from src.core.models import OperationLog, LogDetailItem
-from src.utils.config import load_config
-from src.utils.tools import generate_uuid_str
+from loggage.core.logger import AsyncOperationLogger
+from loggage.core.models import OperationLog, LogDetailItem
+from loggage.utils import load_config
+from loggage.utils.tools import generate_uuid_str
 
 
 async def main():

@@ -1,13 +1,11 @@
-import asyncio
-
 from fastapi import  FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from src.core.decorators import operation_logger
-from src.core.hybrid_logger import HybridOperationLogger
-from src.utils.config import load_config
+from loggage.core.decorators import operation_logger
+from loggage.core.hybrid_logger import HybridOperationLogger
+from loggage.utils.config import load_config
 
-config = load_config("/home/zalex/PycharmProjects/loggage/config/config.yaml")
+config = load_config("/config/config.yaml")
 HybridOperationLogger().initialize(config)
 
 app = FastAPI()

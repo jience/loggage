@@ -1,7 +1,7 @@
 import json
 import uuid
 
-from src.core.models import LogDetailItem
+from loggage.core.models import LogDetailItem
 
 
 def _get_user_id(request) -> str:

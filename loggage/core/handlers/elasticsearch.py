@@ -3,8 +3,8 @@ from typing import Dict, Any, List, Iterator
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.helpers import async_bulk
 
-from src.core.handlers.base import BaseStorageHandler
-from src.core.models import OperationLog
+from loggage.core.handlers.base import BaseStorageHandler
+from loggage.core.models import OperationLog
 
 
 class ElasticsearchStorageHandler(BaseStorageHandler):
