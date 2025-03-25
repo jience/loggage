@@ -1,12 +1,12 @@
 from bottle import Bottle
 
-from src.core.decorators import hybrid_logger
-from src.core.hybrid_logger import HybridLogger
+from src.core.decorators import operation_logger
+from src.core.hybrid_logger import HybridOperationLogger
 from src.utils.config import load_config
 
 
 config = load_config("/home/zalex/PycharmProjects/loggage/config/config.yaml")
-HybridLogger().initialize(config)
+HybridOperationLogger().initialize(config)
 
 
 app = Bottle()
@@ -17,9 +17,9 @@ def index():
 
 
 @app.get("/api/users")
-@hybrid_logger(resource_type="user", action="create",
-               obj_id="123", obj_name="user123",
-               ref_id="456", ref_name="456")
+@operation_logger(resource_type="user", action="create",
+                  obj_id="123", obj_name="user123",
+                  ref_id="456", ref_name="456")
 def create_user():
     return "Hello, Bottle"
 

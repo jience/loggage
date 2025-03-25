@@ -8,7 +8,7 @@ from src.utils.tools import generate_uuid_str
 
 
 async def main():
-    config = load_config("config/config.yaml")
+    config = load_config("../../config/config.yaml")
 
     async with AsyncOperationLogger(config) as op_logger:
         log_detail = LogDetailItem(id=generate_uuid_str(), name="vdi", type="admin")
@@ -35,9 +35,9 @@ async def main():
             created_at=datetime.now(),
             updated_at=datetime.now(),
         )
-        # await op_logger.log(log_data)
+        await op_logger.log(log_data)
         # 或批量处理
-        await op_logger.log_batch([log_data, log_data, log_data])
+        # await op_logger.log_batch([log_data, log_data, log_data])
 
 
 if __name__ == "__main__":

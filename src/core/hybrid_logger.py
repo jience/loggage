@@ -8,7 +8,7 @@ from src.core.logger import AsyncOperationLogger
 from src.core.models import OperationLog
 
 
-class HybridLogger:
+class HybridOperationLogger:
     _instance = None
     BATCH_SIZE = 100
     MAX_QUEUE_SIZE = 10000

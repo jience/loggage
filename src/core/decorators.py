@@ -1,10 +1,10 @@
 import functools
 
-from src.core.hybrid_logger import HybridLogger
+from src.core.hybrid_logger import HybridOperationLogger
 from src.core.models import OperationLog, OperationLogStatus
 
 
-def hybrid_logger(
+def operation_logger(
         resource_type: str,
         action: str,
         obj_id: str = "",
@@ -53,7 +53,7 @@ def hybrid_logger(
                     error_code=error_code,
                     error_message=error_message
                 )
-                HybridLogger().log(log_data)
+                HybridOperationLogger().log(log_data)
         return wrapper
     return decorator
 
