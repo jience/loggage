@@ -1,3 +1,5 @@
+import asyncio
+
 from bottle import Bottle, request, response
 
 from loggage.core.decorators import operation_logger
@@ -29,11 +31,15 @@ def create_user():
 
 
 @app.get("/api/logs/<log_id>")
-async def get_log(log_id: str):
-    log = await AsyncOperationLogger.get_instance().get_log(
-        log_id,
-        request.query.get("storage")
+def get_log(log_id: str):
+    loop = asyncio.get_event_loop()
+    future = asyncio.run_coroutine_threadsafe(
+        AsyncOperationLogger.get_instance().get_log(
+            log_id, request.query.get("storage")
+        ),
+        loop
     )
+    log = future.result()
     if not log:
         response.status = 404
         return {"error": "Log not found"}
@@ -41,7 +47,7 @@ async def get_log(log_id: str):
 
 
 @app.get("/api/logs")
-async def query_logs():
+def query_logs():
     query_params = dict(request.query)
     page_number = int(query_params.pop("pageNumber", 1))
     page_size = min(int(query_params.pop("pageSize", 200)), 100)
@@ -54,8 +60,13 @@ async def query_logs():
         storage_type=request.query.get("storage")
     )
 
-    result = await AsyncOperationLogger.get_instance().query_logs(query)
-    return result
+    loop = asyncio.get_event_loop()
+    future = asyncio.run_coroutine_threadsafe(
+        AsyncOperationLogger.get_instance().query_logs(query),
+        loop,
+    )
+
+    return future.result()
 
 
 if __name__ == "__main__":
