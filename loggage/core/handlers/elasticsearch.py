@@ -1,7 +1,8 @@
-from typing import Dict, Any, List, Iterator
+from typing import Dict, Any, List, Iterator, Optional
 
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.helpers import async_bulk
+from elasticsearch.exceptions import NotFoundError
 
 from loggage.core.handlers.base import BaseStorageHandler
 from loggage.core.models import OperationLog
@@ -26,11 +27,64 @@ class ElasticsearchStorageHandler(BaseStorageHandler):
     async def log_batch(self, batch: List[OperationLog]) -> None:
         await async_bulk(self.client, self._generate_data(batch))
 
+    async def get_log(self, log_id: str) -> Optional[OperationLog]:
+        try:
+            resp = await self.client.get(
+                index=self.index,
+                id=log_id
+            )
+            return OperationLog(**resp["_source"]["docs"])
+        except NotFoundError:
+            return None
+
+    async def query_logs(
+        self,
+        filters: Dict = None,
+        search: Dict = None,
+        sort: List[tuple] = None,
+        offset: int = 0,
+        limit: int = 20,
+    ) -> (List[OperationLog], int):
+        query = {"bool": {"must": []}}
+
+        # 精准过滤
+        if filters:
+            for field, value in filters.items():
+                query["bool"]["must"].append(
+                    {"term": {field: value}}
+                )
+
+        # 模糊匹配
+        if search:
+            for field, keyword in search.items():
+                query["bool"]["must"].append(
+                    {"wildcard": {field: f"*{keyword}*"}}
+                )
+
+        # 排序规则
+        sort_rules = []
+        if sort:
+            for field, direction in sort:
+                sort_rules.append({field: {"order": direction}})
+
+        body = {"query": query, "sort": sort_rules, "from": offset, "size": limit}
+
+        # 执行查询
+        resp = await self.client.search(
+            index=self.index,
+            body=body
+        )
+
+        total = resp["hits"]["total"]["value"]
+        results = [OperationLog(**hit["_source"]) for hit in resp["hits"]["hits"]]
+
+        return results, total
+
     def _generate_data(self, batch: List[OperationLog]) -> Iterator:
         for log_data in batch:
             yield {
                 "_index": self.index,
-                "docs": log_data.model_dump(mode="json")
+                "_source": log_data.model_dump(mode="json")
             }
 
     async def close(self) -> None:

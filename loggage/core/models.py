@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+from typing import Any, List, Optional, Dict, Union
 
 from pydantic import BaseModel, Field, field_serializer
 
@@ -28,7 +28,7 @@ class OperationLog(BaseModel):
     operation_type: str                                           # 操作日志类型
     action: str                                                   # 操作动作
     status: str                                                   # 日志状态
-    detail: Optional[List[LogDetailItem]] = None                  # 操作对象详情
+    detail: Union[List[LogDetailItem], str, None]                 # 操作对象详情
     request_ip: str                                               # 请求IP
     request_params: Optional[str] = None                          # 请求参数
     interval_time: int                                            # 操作时长
@@ -46,3 +46,12 @@ class OperationLog(BaseModel):
             return {"resources": [d.model_dump() for d in detail]}
         else:
             return ""
+
+
+class LogQuery(BaseModel):
+    filters: Dict[str, Any] = None                  # 过滤条件
+    search: Dict[str, str] = None                   # 模糊搜索条件
+    sort: List[tuple] = [("created_at", "desc")]    # 排序规则 [("field", "asc|desc")]
+    page_number: int = 1                            # 当前页码
+    page_size: int = 20                             # 每页大小
+    storage_type: str = None                        # 指定存储引擎

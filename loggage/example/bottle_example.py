@@ -1,7 +1,9 @@
-from bottle import Bottle, request
+from bottle import Bottle, request, response
 
 from loggage.core.decorators import operation_logger
 from loggage.core.hybrid_logger import HybridOperationLogger
+from loggage.core.logger import AsyncOperationLogger
+from loggage.core.models import LogQuery
 from loggage.utils.config import load_config
 
 
@@ -24,6 +26,36 @@ def create_user():
     setattr(request, "ref_id", "")
     setattr(request, "ref_name", "")
     return "Hello, Bottle"
+
+
+@app.get("/api/logs/<log_id>")
+async def get_log(log_id: str):
+    log = await AsyncOperationLogger.get_instance().get_log(
+        log_id,
+        request.query.get("storage")
+    )
+    if not log:
+        response.status = 404
+        return {"error": "Log not found"}
+    return log.model_dump_json()
+
+
+@app.get("/api/logs")
+async def query_logs():
+    query_params = dict(request.query)
+    page_number = int(query_params.pop("pageNumber", 1))
+    page_size = min(int(query_params.pop("pageSize", 200)), 100)
+
+    query = LogQuery(
+        filters={k: v for k, v in query_params.items() if not k.startswith("search_")},
+        search={k[7:]: v for k, v in query_params.items() if k.startswith("search_")},
+        page_size=page_size,
+        page_number=page_number,
+        storage_type=request.query.get("storage")
+    )
+
+    result = await AsyncOperationLogger.get_instance().query_logs(query)
+    return result
 
 
 if __name__ == "__main__":

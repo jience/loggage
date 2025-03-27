@@ -2,7 +2,7 @@ import asyncio
 from typing import Dict, List, Optional
 
 from loggage.core.handlers.factory import LogStorageFactory
-from loggage.core.models import OperationLog as OperationLogEntry
+from loggage.core.models import LogQuery, OperationLog as OperationLogEntry
 
 
 class AsyncOperationLogger:
@@ -43,11 +43,11 @@ class AsyncOperationLogger:
     #     cls._instance = AsyncOperationLogger(config)
     #     return cls._instance
     #
-    # @classmethod
-    # def get_instance(cls):
-    #     if cls._instance is None:
-    #         raise RuntimeError("Operation Logger not initialized")
-    #     return cls._instance
+    @classmethod
+    def get_instance(cls):
+        if cls._instance is None:
+            raise RuntimeError("Operation Logger not initialized")
+        return cls._instance
 
     async def initialize(self):
         """初始化所有处理器"""
@@ -75,6 +75,36 @@ class AsyncOperationLogger:
                 for log_data in batch:
                     batch_tasks.append(handler.log(log_data))
         await asyncio.gather(*batch_tasks, return_exceptions=True)
+
+    async def get_log(self, log_id: str, storage_type: str = None):
+        """获取单条日志"""
+        if storage_type:
+            return await self.handlers[storage_type].get_log(log_id)
+
+    async def query_logs(self, query: LogQuery) -> Dict:
+        """统一查询入口"""
+        storage_type = query.storage_type or self.config["default_storage"]
+        handler = self.handlers.get(storage_type)
+
+        if not handler:
+            raise ValueError(f"Storage {storage_type} not available")
+
+        offset = (query.page_number - 1) * query.page_size
+
+        results, total = await handler.query_logs(
+            filters=query.filters,
+            search=query.search,
+            sort=query.sort,
+            offset=offset,
+            limit=query.page_size
+        )
+
+        return {
+            "totalCount": total,
+            "pageSize": query.page_size,
+            "pageNumber": query.page_number,
+            "results": results
+        }
 
     async def close(self):
         """关闭所有处理器连接"""

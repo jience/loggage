@@ -108,6 +108,8 @@ class HybridOperationLogger:
             self.queue.put_nowait(log_data)
         except queue.Full:
             self._handle_queue_full(log_data)
+        except Exception as e:
+            print(f"Oops! an unknown exception occurred: {str(e)}")
 
     def _handle_queue_full(self, log_data: OperationLog):
         """队列满处理策略"""

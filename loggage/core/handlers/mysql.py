@@ -1,7 +1,7 @@
 import json
 
 import aiomysql
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 
 from loggage.core.handlers.base import BaseStorageHandler
 from loggage.core.models import OperationLog
@@ -42,6 +42,72 @@ class MySQLStorageHandler(BaseStorageHandler):
                 await cur.executemany(query, logs_list)
                 print(cur.description)
                 await conn.commit()
+
+    async def get_log(self, log_id: str) -> Optional[OperationLog]:
+        async with self.pool.acquire() as conn:
+            async with conn.cursor() as cur:
+                await cur.execute(
+                    "SELECT * FROM {table_name} WHERE id = %s".format(table_name=self.config["table"]),
+                    (log_id, )
+                )
+                result = await cur.fetchone()
+                return OperationLog(**dict(result)) if result else None
+
+    async def query_logs(
+        self,
+        filters: Dict = None,
+        search: Dict = None,
+        sort: List[tuple] = None,
+        offset: int = 0,
+        limit: int = 20,
+    ) -> (List[OperationLog], int):
+        # 构建查询条件
+        where_clauses = []
+        params = []
+
+        # 精准过滤
+        if filters:
+            for field, value in filters.items():
+                where_clauses.append(f"{field} = %s")
+                params.append(value)
+
+        # 模糊匹配
+        if search:
+            for field, keyword in search.items():
+                where_clauses.append(f"{field} LIKE %s")
+                params.append(f"%{keyword}%")
+
+        # 排序规则
+        order_by = "ORDER BY " + ", ".join(
+            [f"{field} {direction}" for field, direction in sort]
+        ) if sort else ""
+
+        # 分页
+        limit_clause = "LIMIT %s OFFSET %s"
+        params.extend([limit, offset])
+
+        # 执行查询
+        async with self.pool.acquire() as conn:
+            async with conn.cursor() as cur:
+                # 查询数据
+                query = f"""
+                    SELECT * FROM {self.config["table"]}
+                    {'WHERE ' + ' AND '.join(where_clauses) if where_clauses else ''}
+                    {order_by}
+                    {limit_clause}
+                """
+                await cur.execute(query, params)
+                results = await cur.fetchall()
+
+                # 查询总数
+                count_query = f"""
+                    SELECT COUNT(*) FROM {self.config["table"]}
+                    {'WHERE ' + ' AND '.join(where_clauses) if where_clauses else ''}
+                """
+                await cur.execute(count_query, params[:-2])  # 排除分页参数
+                total = await cur.fetchone()
+
+        return [OperationLog(**dict(r)) for r in results], total[0]
 
     async def close(self) -> None:
         if self.pool:
