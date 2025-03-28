@@ -1,8 +1,10 @@
 from gevent import monkey; monkey.patch_all()
 import asyncio
+import gevent
 
 from bottle import Bottle, request, response
 
+from loggage.core.context import OperationLogContext
 from loggage.core.decorators import operation_logger
 from loggage.core.hybrid_logger import HybridOperationLogger
 from loggage.core.logger import AsyncOperationLogger
@@ -29,6 +31,33 @@ def create_user():
     setattr(request, "ref_id", "")
     setattr(request, "ref_name", "")
     return "Hello, Bottle"
+
+@app.get("/api/roles")
+@OperationLogContext(resource_type="role", action="create")
+def create_role():
+    setattr(request, "obj_id", "role111111")
+    setattr(request, "obj_name", "role111111")
+    return "Hello, Role"
+
+
+@app.get("/api/departments")
+def create_department():
+    job = gevent.spawn(create_dept)
+    gevent.joinall([job])
+    return "Hello, Dept"
+
+
+def create_dept():
+    with OperationLogContext(resource_type="department", action="create") as opt_logger:
+        opt_logger.add_context(obj_id="dept11111111")
+        opt_logger.add_context(obj_name="dept11111111")
+        opt_logger.add_context(ref_id="123456")
+        opt_logger.add_context(ref_name="Alex")
+        opt_logger.add_context(user_id="1111")
+        opt_logger.add_context(user_name="Alex")
+        opt_logger.add_context(request_id="111111111111111111111111")
+        opt_logger.add_context(request_ip="127.0.0.1")
+        opt_logger.add_context(detail=[])
 
 
 @app.get("/api/logs/<log_id>")
@@ -71,4 +100,4 @@ def query_logs():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8090, server='gevent')
+    app.run(host="0.0.0.0", port=8090)
