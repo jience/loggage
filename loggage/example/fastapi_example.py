@@ -3,7 +3,7 @@ from typing import Union
 from fastapi import  FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from loggage.core.decorators import operation_logger
+from loggage.core.context import OperationLogContext
 from loggage.core.hybrid_logger import HybridOperationLogger
 from loggage.core.logger import AsyncOperationLogger
 from loggage.core.models import LogQuery
@@ -20,7 +20,7 @@ def get_request():
 
 
 @app.get("/api/users")
-@operation_logger(resource_type="User", action="create")
+@OperationLogContext(resource_type="User", action="create")
 async def create_user():
     return JSONResponse({"hello": "FastAPI"}, status_code=200)
 
@@ -28,8 +28,7 @@ async def create_user():
 @app.get("/api/logs/{log_id}")
 async def get_log(log_id: str, storage: Union[str, None] = None):
     log = await AsyncOperationLogger.get_instance().get_log(
-        log_id,
-        storage
+        log_id
     )
     if not log:
         return {"error": "Log not found"}

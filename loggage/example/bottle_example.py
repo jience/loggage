@@ -1,11 +1,10 @@
-from gevent import monkey; monkey.patch_all()
+# from gevent import monkey; monkey.patch_all()
 import asyncio
 import gevent
 
 from bottle import Bottle, request, response
 
 from loggage.core.context import OperationLogContext
-from loggage.core.decorators import operation_logger
 from loggage.core.hybrid_logger import HybridOperationLogger
 from loggage.core.logger import AsyncOperationLogger
 from loggage.core.models import LogQuery
@@ -24,7 +23,7 @@ def index():
 
 
 @app.get("/api/users")
-@operation_logger(resource_type="user", action="create")
+@OperationLogContext(resource_type="user", action="create")
 def create_user():
     setattr(request, "obj_name", "Alex")
     setattr(request, "obj_id", "123456")
@@ -64,9 +63,7 @@ def create_dept():
 def get_log(log_id: str):
     loop = asyncio.get_event_loop()
     future = asyncio.run_coroutine_threadsafe(
-        AsyncOperationLogger.get_instance().get_log(
-            log_id, request.query.get("storage")
-        ),
+        AsyncOperationLogger.get_instance().get_log(log_id),
         loop
     )
     log = future.result()

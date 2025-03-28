@@ -94,10 +94,10 @@ class AsyncOperationLogger:
                     batch_tasks.append(handler.log(log_data))
         await asyncio.gather(*batch_tasks, return_exceptions=True)
 
-    async def get_log(self, log_id: str, storage_type: str = None) -> Optional[OperationLogEntry]:
+    async def get_log(self, log_id: str) -> Optional[OperationLogEntry]:
         """获取单条日志"""
-        if storage_type:
-            return await self.handlers[storage_type].get_log(log_id)
+        # 优先默认存储查询
+        return await self.handlers[self.config["default_storage"]].get_log(log_id)
 
     async def query_logs(self, query: LogQuery) -> Dict:
         """统一查询入口"""
