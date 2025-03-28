@@ -3,6 +3,7 @@ import json
 import aiomysql
 from typing import Dict, Any, List, Optional
 
+from loggage.core.exceptions import ConcurrentUpdateError
 from loggage.core.handlers.base import BaseStorageHandler
 from loggage.core.models import OperationLog
 
@@ -108,6 +109,41 @@ class MySQLStorageHandler(BaseStorageHandler):
                 total = await cur.fetchone()
 
         return [OperationLog(**dict(r)) for r in results], total[0]
+
+    async def update_log(self, log_id: str, updates: dict) -> bool:
+        async with self.pool.acquire() as conn:
+            async with conn.cursor() as cur:
+                if "version" not in updates:
+                    raise ValueError("Version field is required for update")
+
+                # 构建乐观锁更新语句
+                set_clause = ", ".join([
+                    f"{field} = %s"
+                    for field in updates.keys()
+                ])
+                values = list(updates.values()) + [log_id, updates["version"]-1]
+
+                query = f"""
+                    UPDATE {self.config["table"]}
+                    SET {set_clause}, version = version + 1
+                    WHERE log_id = %s AND version = %s
+                """
+                await cur.execute(query, values)
+                await conn.commit()
+
+                if cur.rowcount == 0:
+                    await cur.execute(
+                        f"""SELECT version FROM {self.config["table"]} WHERE log_id = %s""",
+                        (log_id,)
+                    )
+                    result = await cur.fetchone()
+                    actual_version = result[0] if result else None
+                    raise ConcurrentUpdateError(
+                        log_id=log_id,
+                        expected_version=updates["version"],
+                        actual_version=actual_version
+                    )
+                return True
 
     async def close(self) -> None:
         if self.pool:

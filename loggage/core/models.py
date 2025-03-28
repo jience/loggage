@@ -39,6 +39,7 @@ class OperationLog(BaseModel):
     created_at: datetime = Field(default_factory=datetime.now)    # 创建时间
     updated_at: datetime = Field(default_factory=datetime.now)    # 更新时间
     retry_count: int = Field(exclude=True, default=0)             # 重试计数器
+    version: int = Field(default=0)                               # 乐观锁版本号
 
     @field_serializer("detail")
     def serialize_detail(self, detail: List[LogDetailItem]):
@@ -46,6 +47,13 @@ class OperationLog(BaseModel):
             return {"resources": [d.model_dump() for d in detail]}
         else:
             return ""
+
+    def update_fields(self, **updates):
+        return self.model_copy(update={
+            **updates,
+            "updated_at": datetime.now(),
+            "version": self.version + 1
+        })
 
 
 class LogQuery(BaseModel):

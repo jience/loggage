@@ -31,6 +31,10 @@ class BaseStorageHandler(ABC):
         pass
 
     @abstractmethod
+    async def update_log(self, log_id: str, updates: dict) -> bool:
+        pass
+
+    @abstractmethod
     async def close(self) -> None:
         """关闭连接资源"""
         pass

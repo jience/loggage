@@ -4,6 +4,7 @@ from elasticsearch import AsyncElasticsearch
 from elasticsearch.helpers import async_bulk
 from elasticsearch.exceptions import NotFoundError
 
+from loggage.core.exceptions import ConcurrentUpdateError
 from loggage.core.handlers.base import BaseStorageHandler
 from loggage.core.models import OperationLog
 
@@ -79,6 +80,31 @@ class ElasticsearchStorageHandler(BaseStorageHandler):
         results = [OperationLog(**hit["_source"]) for hit in resp["hits"]["hits"]]
 
         return results, total
+
+    async def update_log(self, log_id: str, updates: dict) -> bool:
+        try:
+            doc = await self.client.get(
+                index=self.index,
+                id=log_id
+            )
+            current_version = doc["_version"]
+
+            if updates.get("version") != current_version + 1:
+                raise ConcurrentUpdateError(
+                    log_id=log_id,
+                    expected_version=current_version + 1,
+                    actual_version=current_version
+                )
+
+            response = await self.client.update(
+                index=self.index,
+                id=log_id,
+                body={"doc": updates},
+                # version=current_version
+            )
+            return response["result"] == "updated"
+        except NotFoundError:
+            return False
 
     def _generate_data(self, batch: List[OperationLog]) -> Iterator:
         for log_data in batch:

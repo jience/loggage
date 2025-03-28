@@ -1,8 +1,26 @@
 import asyncio
+from functools import wraps
 from typing import Dict, List, Optional
 
+from loggage.core.exceptions import ConcurrentUpdateError
 from loggage.core.handlers.factory import LogStorageFactory
 from loggage.core.models import LogQuery, OperationLog as OperationLogEntry
+
+
+def retry_on_conflict(max_retries=3):
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            for attempt in range(1, max_retries):
+                try:
+                    return await func(*args, **kwargs)
+                except ConcurrentUpdateError as e:
+                    if attempt == max_retries - 1:
+                        raise
+                    await asyncio.sleep(attempt * 0.5)
+            return None
+        return wrapper
+    return decorator
 
 
 class AsyncOperationLogger:
@@ -76,7 +94,7 @@ class AsyncOperationLogger:
                     batch_tasks.append(handler.log(log_data))
         await asyncio.gather(*batch_tasks, return_exceptions=True)
 
-    async def get_log(self, log_id: str, storage_type: str = None):
+    async def get_log(self, log_id: str, storage_type: str = None) -> Optional[OperationLogEntry]:
         """获取单条日志"""
         if storage_type:
             return await self.handlers[storage_type].get_log(log_id)
@@ -105,6 +123,39 @@ class AsyncOperationLogger:
             "pageNumber": query.page_number,
             "results": results
         }
+
+    @retry_on_conflict(max_retries=3)
+    async def update_log(self, log_id: str, updates: dict) -> bool:
+        """
+        更新日志(带乐观锁校验)
+        返回是否更新成功
+        :param log_id:
+        :param updates:
+        :return:
+        """
+        # 获取当前日志
+        original_log = await self.get_log(log_id)
+        if not original_log:
+            return False
+
+        # 生成更新后的对象
+        updated_log = original_log.update_fields(**updates)
+
+        # 构建存储层更新字典
+        update_data = updated_log.dict(
+            exclude={"log_id", "created_at"},
+            exclude_unset=True
+        )
+
+        # 尝试更新所有存储
+        success = False
+        for handler in self.handlers.values():
+            try:
+                if await handler.update_log(log_id, update_data):
+                    success = True
+            except Exception as e:
+                print(f"Update failed on {handler.__class__.__name__}: {e}")
+        return success
 
     async def close(self):
         """关闭所有处理器连接"""

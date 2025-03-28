@@ -120,6 +120,10 @@ class HybridOperationLogger:
         except queue.Empty:
             pass
 
+    def update_log(self, log_id: str, updates: dict) -> bool:
+        """同步提交更新请求"""
+        pass
+
     def shutdown(self):
         """优雅关闭"""
         self._running = False
